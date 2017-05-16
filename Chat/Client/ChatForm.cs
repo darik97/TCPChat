@@ -63,6 +63,7 @@ namespace Client
                 signOutButton.Enabled = true;
                 chatHistory.Enabled = true;
                 chatHistory.ReadOnly = true;
+                
                 messageBox.Enabled = true;
                 sendButton.Enabled = true;
                 messageBox.Focus();
@@ -115,7 +116,9 @@ namespace Client
                     while (stream.DataAvailable);
 
                     string message = builder.ToString();
-                    chatHistory.Text = chatHistory.Text + "\r\n" + message;
+                    chatHistory.Text += "\r\n" + message;
+                    chatHistory.Select(chatHistory.Text.Length, 0);
+                    chatHistory.ScrollToCaret();
                 }
                 catch
                 {
