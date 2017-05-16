@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.Linq;
 using System.Net.Sockets;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Client
@@ -41,7 +38,7 @@ namespace Client
             };
 
             sendButton.Click += SendButton_Click;
-            messageBox.KeyDown += (sender, arg) =>
+            messageBox.KeyUp += (sender, arg) =>
             {
                 if (arg.KeyCode == Keys.Enter)
                 {
@@ -50,6 +47,7 @@ namespace Client
             };
 
             signOutButton.Click += (sender, arg) => disconnect();
+            FormClosing += (sender, arg) => disconnect();
         }
 
         private void SignInButton_Click(object sender, EventArgs e)
@@ -95,7 +93,7 @@ namespace Client
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                MessageBox.Show(ex.Message, "Ошибка при подключении");
             }
         }
 
@@ -116,6 +114,18 @@ namespace Client
                     while (stream.DataAvailable);
 
                     string message = builder.ToString();
+
+                    List<string> messageList = new List<string>();
+                    if (isUsersList(message, out messageList))
+                    {
+                        usersList.Text = "";
+                        message = messageList[0];
+                        for (int i = 1; i < messageList.Count; i++)
+                        {
+                            usersList.Text += messageList[i] + "\r\n";
+                        }
+                    }
+
                     chatHistory.Text += "\r\n" + message;
                     chatHistory.Select(chatHistory.Text.Length, 0);
                     chatHistory.ScrollToCaret();
@@ -126,6 +136,22 @@ namespace Client
                     disconnect();
                 }
             }
+        }
+
+        private bool isUsersList(string message, out List<string> list)
+        {
+            list = null;
+
+            string temp = message;
+            Regex regex = new Regex("[0-2][0-9]:[0-6][0-9] ");
+            MatchCollection matches = regex.Matches(temp);
+            if (matches.Count == 0)
+            {
+                String[] substrings = temp.Split(';');
+                list = substrings.ToList();
+                return true;   
+            }
+            return false;  
         }
 
         private void SendButton_Click(object sender, EventArgs e)

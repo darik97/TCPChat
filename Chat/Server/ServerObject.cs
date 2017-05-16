@@ -36,7 +36,7 @@ namespace Server
             }
             catch(Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                Console.WriteLine("Ошибка в работе сервера: " + ex.Message);
                 disconnect();
             }
         }
@@ -66,6 +66,16 @@ namespace Server
             {
                 clients.Remove(client);
             }
+        }
+
+        public string GetUsersList()
+        {
+            string users = ";";
+            for (int i = 0; i < clients.Count; i++)
+            {
+                users += clients[i].userName + ";";
+            }
+            return users;
         }
     }
 }

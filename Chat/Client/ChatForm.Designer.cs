@@ -101,19 +101,19 @@
             // 
             // messageBox
             // 
-            this.messageBox.Location = new System.Drawing.Point(12, 420);
+            this.messageBox.Location = new System.Drawing.Point(12, 417);
             this.messageBox.Multiline = true;
             this.messageBox.Name = "messageBox";
             this.messageBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.messageBox.Size = new System.Drawing.Size(540, 57);
+            this.messageBox.Size = new System.Drawing.Size(540, 61);
             this.messageBox.TabIndex = 6;
             // 
             // sendButton
             // 
             this.sendButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F);
-            this.sendButton.Location = new System.Drawing.Point(558, 420);
+            this.sendButton.Location = new System.Drawing.Point(558, 417);
             this.sendButton.Name = "sendButton";
-            this.sendButton.Size = new System.Drawing.Size(114, 57);
+            this.sendButton.Size = new System.Drawing.Size(114, 61);
             this.sendButton.TabIndex = 7;
             this.sendButton.Text = "Отправить";
             this.sendButton.UseVisualStyleBackColor = true;
@@ -133,7 +133,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.LightBlue;
-            this.ClientSize = new System.Drawing.Size(684, 490);
+            this.ClientSize = new System.Drawing.Size(684, 479);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.sendButton);
             this.Controls.Add(this.messageBox);

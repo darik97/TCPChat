@@ -8,7 +8,7 @@ namespace Server
     {
         protected internal string id { get; private set; }
         protected internal NetworkStream stream { get; private set; }
-        string userName;
+        protected internal string userName;
         TcpClient client;
         ServerObject server;
 
@@ -29,38 +29,40 @@ namespace Server
                 userName = message;
 
                 message += " присоединился к чату";
-                server.broadcastMessage(message);
                 Console.WriteLine(message);
+                message += server.GetUsersList();
+                server.broadcastMessage(message);
 
                 while (true)
                 {
                     try
                     {
                         message = getMessage();
-                        message = string.Format("{0}: {1}", DateTime.Now.ToShortTimeString() + " " + userName, message);
+                        message = DateTime.Now.ToShortTimeString() + " " + userName + ": " + message;
                         Console.WriteLine(message);
                         server.broadcastMessage(message);
                     }
                     catch
                     {
-                        message = string.Format("{0}: покинул чат", userName);
+                        message = userName + " покинул чат";
                         Console.WriteLine(message);
+                        server.removeConnection(id);
+                        message += server.GetUsersList();
                         server.broadcastMessage(message);
                         break;
                     }
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                Console.WriteLine("Ошибка в работе чата:" + e.Message);
             }
             finally
             {
-                server.removeConnection(id);
+                //server.removeConnection(id);
                 close();
             }
         }
-
         private string getMessage()
         {
             byte[] data = new byte[512];
