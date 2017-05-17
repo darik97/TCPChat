@@ -55,13 +55,13 @@ namespace Server
             byte[] data = Encoding.Unicode.GetBytes(message);
             for (int i = 0; i < clients.Count; i++)
             {
-                clients[i].stream.Write(data, 0, data.Length);
+                clients[i].Stream.Write(data, 0, data.Length);
             }
         }
 
         public void RemoveClient(string clientId)
         {
-            ClientObject client = clients.FirstOrDefault(c => c.id == clientId);
+            ClientObject client = clients.FirstOrDefault(c => c.Id == clientId);
             if (client != null)
             {
                 clients.Remove(client);
@@ -73,7 +73,7 @@ namespace Server
             string users = ";";
             for (int i = 0; i < clients.Count; i++)
             {
-                users += clients[i].userName + ";";
+                users += clients[i].UserName + ";";
             }
             return users;
         }

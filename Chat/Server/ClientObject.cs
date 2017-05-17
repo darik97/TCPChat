@@ -6,15 +6,15 @@ namespace Server
 {
     class ClientObject
     {
-        protected internal string id { get; private set; }
-        protected internal NetworkStream stream { get; private set; }
-        protected internal string userName;
+        public string Id { get; private set; }
+        public NetworkStream Stream { get; private set; }
+        public string UserName;
         TcpClient client;
         ServerObject server;
 
         public ClientObject(TcpClient tcpClient, ServerObject serverObject)
         {
-            id = Guid.NewGuid().ToString();
+            Id = Guid.NewGuid().ToString();
             client = tcpClient;
             server = serverObject;
             serverObject.AddNewClient(this);
@@ -24,9 +24,9 @@ namespace Server
         {
             try
             {
-                stream = client.GetStream();
+                Stream = client.GetStream();
                 string message = getMessage();
-                userName = message;
+                UserName = message;
 
                 message += " присоединился к чату";
                 Console.WriteLine(message);
@@ -38,15 +38,15 @@ namespace Server
                     try
                     {
                         message = getMessage();
-                        message = DateTime.Now.ToShortTimeString() + " " + userName + ": " + message;
+                        message = DateTime.Now.ToShortTimeString() + " " + UserName + ": " + message;
                         Console.WriteLine(message);
                         server.BroadcastMessage(message);
                     }
                     catch
                     {
-                        message = userName + " покинул чат";
+                        message = UserName + " покинул чат";
                         Console.WriteLine(message);
-                        server.RemoveClient(id);
+                        server.RemoveClient(Id);
                         message += server.GetUsersList();
                         server.BroadcastMessage(message);
                         break;
@@ -70,19 +70,19 @@ namespace Server
             int bytes = 0;
             do
             {
-                bytes = stream.Read(data, 0, data.Length);
+                bytes = Stream.Read(data, 0, data.Length);
                 builder.Append(Encoding.Unicode.GetString(data, 0, bytes));
             }
-            while (stream.DataAvailable);
+            while (Stream.DataAvailable);
 
             return builder.ToString();
         }
 
         public void Close()
         {
-            if (stream != null)
+            if (Stream != null)
             {
-                stream.Close();
+                Stream.Close();
             }
             if (client != null)
             {

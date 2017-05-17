@@ -118,7 +118,7 @@ namespace Client
                     List<string> messageList = new List<string>();
                     if (isUsersList(message, out messageList))
                     {
-                        usersList.Text = "";
+                        usersList.Clear();
                         message = messageList[0];
                         for (int i = 1; i < messageList.Count; i++)
                         {
