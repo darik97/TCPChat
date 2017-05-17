@@ -1,28 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Net.Sockets;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading;
 using System.Windows.Forms;
 
 namespace Client
 {
     public partial class ChatForm : Form
     {
-        static string userName;
-        private const string host = "127.0.0.1";
-        private const int port = 8000;
-        static TcpClient client;
-        static NetworkStream stream;
+        public string UserName { get; private set; }
 
-        private delegate void UpdateUsersList(List<string> userList);
-        private UpdateUsersList usersDelegate;
+        public delegate void UpdateUsersList(List<string> userList);
+        public UpdateUsersList UsersDelegate;
 
-        private delegate void UpdateChatHistory(string newMessage);
-        private UpdateChatHistory chatDelegate;
+        public delegate void UpdateChatHistory(string newMessage);
+        public UpdateChatHistory ChatDelegate;
+
+        public delegate void ShowErrorMessage(string error, string header);
+        public ShowErrorMessage ErrorDelegate;
+
+        ChatController chatController;
 
         public ChatForm()
         {
@@ -35,121 +31,72 @@ namespace Client
             messageBox.Enabled = false;
             sendButton.Enabled = false;
 
-            signInButton.Click += SignInButton_Click;
+            signInButton.Click += signInButton_Click;
             userNameBox.KeyUp += (sender, arg) =>
             {
                 if (arg.KeyCode == Keys.Enter)
                 {
-                    SignInButton_Click(sender, arg);
+                    signInButton_Click(sender, arg);
                 }
             };
 
-            sendButton.Click += SendButton_Click;
+            sendButton.Click += sendButton_Click;
             messageBox.KeyDown += (sender, arg) =>
             {
                 if (arg.KeyCode == Keys.Enter)
                 {
-                    SendButton_Click(sender, arg);
+                    sendButton_Click(sender, arg);
                 }
             };
 
-            signOutButton.Click += (sender, arg) => disconnect();
-            FormClosing += (sender, arg) => disconnect();
+            signOutButton.Click += (sender, arg) => chatController.Disconnect();
+            FormClosing += (sender, arg) => chatController.Disconnect();
 
-            usersDelegate = new UpdateUsersList(printUsers);
-            chatDelegate = new UpdateChatHistory(printMessage);
+            UsersDelegate = new UpdateUsersList(printUsers);
+            ChatDelegate = new UpdateChatHistory(printMessage);
+            ErrorDelegate = new ShowErrorMessage(showError);
+
+            chatController = new ChatController(this);
         }
 
-        private void SignInButton_Click(object sender, EventArgs e)
+        private void signInButton_Click(object sender, EventArgs e)
         {
             if (userNameBox.Text != "")
             {
-                userName = userNameBox.Text;
+                UserName = userNameBox.Text;
 
                 userNameBox.Enabled = false;
                 signInButton.Enabled = false;
                 signOutButton.Enabled = true;
                 chatHistory.Enabled = true;
                 chatHistory.ReadOnly = true;
-                
+
                 messageBox.Enabled = true;
                 sendButton.Enabled = true;
                 messageBox.Focus();
 
-                client = new TcpClient();
-                startChat();
+                chatController.StartChat(new TcpClient());
             }
             else
             {
-                MessageBox.Show("Введите имя!");
+                showError("Введите имя!", "Вход запрещен");
             }
         }
 
-        private void startChat()
+        private void sendButton_Click(object sender, EventArgs e)
         {
-            try
+            if (messageBox.Text != "")
             {
-                client.Connect(host, port);
-                stream = client.GetStream();
-
-                string message = userName;
-                byte[] data = Encoding.Unicode.GetBytes(message);
-                stream.Write(data, 0, data.Length);
-
-                Thread receiveThread = new Thread(new ThreadStart(receiveMessage));
-                receiveThread.Start();
-
-                chatHistory.Text = "Добро пожаловать, " + userName + "\n";
-            }
-            catch (SocketException ex)
-            {
-                MessageBox.Show(ex.Message, "Ошибка при подключении");
-            }
-        }
-
-        private void receiveMessage()
-        {
-            while (true)
-            {
-                try
-                {
-                    byte[] data = new byte[512];
-                    StringBuilder builder = new StringBuilder();
-                    int bytes = 0;
-                    do
-                    {
-                        bytes = stream.Read(data, 0, data.Length);
-                        builder.Append(Encoding.Unicode.GetString(data, 0, bytes));
-                    }
-                    while (stream.DataAvailable);
-
-                    string message = builder.ToString();
-
-                    List<string> messageList = new List<string>();
-                    if (isUsersList(message, out messageList))
-                    {
-                        message = messageList[0];
-                        Invoke(usersDelegate, new object[] { messageList });
-                    }
-
-                    Invoke(chatDelegate, new object[] { message }); 
-                }
-                catch (IOException e)
-                {
-                    MessageBox.Show("Подключение прервано!");
-                    disconnect();
-                }
-                catch (SocketException e)
-                {
-                    MessageBox.Show("Подключение прервано!");
-                    disconnect();
-                }
+                string message = messageBox.Text;
+                chatController.SendMessage(message);
+                messageBox.Focus();
+                messageBox.Clear();
             }
         }
 
         private void printMessage(string message)
         {
-            chatHistory.Text += "\r\n" + message;
+            chatHistory.Text += message + "\r\n";
             chatHistory.Select(chatHistory.Text.Length, 0);
             chatHistory.ScrollToCaret();
         }
@@ -163,45 +110,10 @@ namespace Client
             }
         }
 
-        private bool isUsersList(string message, out List<string> list)
+        private void showError(string error, string header)
         {
-            list = null;
-
-            string temp = message;
-            Regex regex = new Regex("[0-2][0-9]:[0-6][0-9] ");
-            MatchCollection matches = regex.Matches(temp);
-            if (matches.Count == 0)
-            {
-                string[] substrings = temp.Split(';');
-                list = substrings.ToList();
-                return true;   
-            }
-            return false;  
+            MessageBox.Show(error, header);
         }
 
-        private void SendButton_Click(object sender, EventArgs e)
-        {
-            if (messageBox.Text != "")
-            {
-                string message = messageBox.Text;
-                byte[] data = Encoding.Unicode.GetBytes(message);
-                stream.Write(data, 0, data.Length);
-                messageBox.Focus();
-                messageBox.Clear();
-            }
-        }
-
-        private void disconnect()
-        {
-            if (stream != null)
-            {
-                stream.Close();
-            }
-            if (client != null)
-            {
-                client.Close();
-            }
-            Environment.Exit(0);
-        }
     }
 }
