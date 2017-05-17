@@ -34,9 +34,9 @@
             this.signOutButton = new System.Windows.Forms.Button();
             this.chatHistory = new System.Windows.Forms.TextBox();
             this.usersList = new System.Windows.Forms.TextBox();
-            this.messageBox = new System.Windows.Forms.TextBox();
             this.sendButton = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
+            this.messageBox = new System.Windows.Forms.RichTextBox();
             this.SuspendLayout();
             // 
             // label1
@@ -99,21 +99,12 @@
             this.usersList.Size = new System.Drawing.Size(234, 346);
             this.usersList.TabIndex = 5;
             // 
-            // messageBox
-            // 
-            this.messageBox.Location = new System.Drawing.Point(12, 417);
-            this.messageBox.Multiline = true;
-            this.messageBox.Name = "messageBox";
-            this.messageBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.messageBox.Size = new System.Drawing.Size(540, 61);
-            this.messageBox.TabIndex = 6;
-            // 
             // sendButton
             // 
-            this.sendButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F);
+            this.sendButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.sendButton.Location = new System.Drawing.Point(558, 417);
             this.sendButton.Name = "sendButton";
-            this.sendButton.Size = new System.Drawing.Size(114, 61);
+            this.sendButton.Size = new System.Drawing.Size(114, 24);
             this.sendButton.TabIndex = 7;
             this.sendButton.Text = "Отправить";
             this.sendButton.UseVisualStyleBackColor = true;
@@ -128,15 +119,25 @@
             this.label2.TabIndex = 8;
             this.label2.Text = "Пользователи онлайн:";
             // 
+            // messageBox
+            // 
+            this.messageBox.Location = new System.Drawing.Point(12, 417);
+            this.messageBox.MaximumSize = new System.Drawing.Size(540, 72);
+            this.messageBox.MinimumSize = new System.Drawing.Size(540, 24);
+            this.messageBox.Name = "messageBox";
+            this.messageBox.Size = new System.Drawing.Size(540, 50);
+            this.messageBox.TabIndex = 9;
+            this.messageBox.Text = "";
+            // 
             // ChatForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.LightBlue;
             this.ClientSize = new System.Drawing.Size(684, 479);
+            this.Controls.Add(this.messageBox);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.sendButton);
-            this.Controls.Add(this.messageBox);
             this.Controls.Add(this.usersList);
             this.Controls.Add(this.chatHistory);
             this.Controls.Add(this.signOutButton);
@@ -158,9 +159,9 @@
         private System.Windows.Forms.Button signOutButton;
         private System.Windows.Forms.TextBox chatHistory;
         private System.Windows.Forms.TextBox usersList;
-        private System.Windows.Forms.TextBox messageBox;
         private System.Windows.Forms.Button sendButton;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.RichTextBox messageBox;
     }
 }
 

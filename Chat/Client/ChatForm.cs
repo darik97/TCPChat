@@ -17,6 +17,12 @@ namespace Client
         static TcpClient client;
         static NetworkStream stream;
 
+        private delegate void UpdateUsersList(List<string> userList);
+        private UpdateUsersList usersDelegate;
+
+        private delegate void UpdateChatHistory(string newMessage);
+        private UpdateChatHistory chatDelegate;
+
         public ChatForm()
         {
             InitializeComponent();
@@ -48,6 +54,9 @@ namespace Client
 
             signOutButton.Click += (sender, arg) => disconnect();
             FormClosing += (sender, arg) => disconnect();
+
+            usersDelegate = new UpdateUsersList(printUsers);
+            chatDelegate = new UpdateChatHistory(printMessage);
         }
 
         private void SignInButton_Click(object sender, EventArgs e)
@@ -118,23 +127,33 @@ namespace Client
                     List<string> messageList = new List<string>();
                     if (isUsersList(message, out messageList))
                     {
-                        usersList.Clear();
                         message = messageList[0];
-                        for (int i = 1; i < messageList.Count; i++)
-                        {
-                            usersList.Text += messageList[i] + "\r\n";
-                        }
+                        Invoke(usersDelegate, new object[] { messageList });
                     }
 
-                    chatHistory.Text += "\r\n" + message;
-                    chatHistory.Select(chatHistory.Text.Length, 0);
-                    chatHistory.ScrollToCaret();
+                    Invoke(chatDelegate, new object[] { message }); 
                 }
-                catch
+                catch (Exception e)
                 {
                     MessageBox.Show("Подключение прервано!");
                     disconnect();
                 }
+            }
+        }
+
+        private void printMessage(string message)
+        {
+            chatHistory.Text += "\r\n" + message;
+            chatHistory.Select(chatHistory.Text.Length, 0);
+            chatHistory.ScrollToCaret();
+        }
+
+        private void printUsers(List<string> messageList)
+        {
+            usersList.Clear();
+            for (int i = 1; i < messageList.Count; i++)
+            {
+                usersList.Text += messageList[i] + "\r\n";
             }
         }
 
@@ -147,7 +166,7 @@ namespace Client
             MatchCollection matches = regex.Matches(temp);
             if (matches.Count == 0)
             {
-                String[] substrings = temp.Split(';');
+                string[] substrings = temp.Split(';');
                 list = substrings.ToList();
                 return true;   
             }

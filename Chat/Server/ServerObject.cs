@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -34,9 +35,19 @@ namespace Server
                     clientThread.Start();
                 }
             }
-            catch(Exception ex)
+            catch (SocketException ex)
             {
-                Console.WriteLine("Ошибка в работе сервера: " + ex.Message);
+                Console.WriteLine(ex.Message);
+                Disconnect();
+            }
+            catch (ThreadStartException e)
+            {
+                Console.WriteLine(e.Message);
+                Disconnect();
+            }
+            catch (ThreadInterruptedException e)
+            {
+                Console.WriteLine(e.Message);
                 Disconnect();
             }
         }
@@ -52,10 +63,17 @@ namespace Server
 
         public void BroadcastMessage(string message)
         {
-            byte[] data = Encoding.Unicode.GetBytes(message);
-            for (int i = 0; i < clients.Count; i++)
+            try
             {
-                clients[i].Stream.Write(data, 0, data.Length);
+                byte[] data = Encoding.Unicode.GetBytes(message);
+                for (int i = 0; i < clients.Count; i++)
+                {
+                    clients[i].Stream.Write(data, 0, data.Length);
+                }
+            }
+            catch (IOException e)
+            {
+                Console.WriteLine(e.Message);
             }
         }
 

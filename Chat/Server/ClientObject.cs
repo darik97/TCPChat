@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Net.Sockets;
 using System.Text;
 
@@ -39,10 +40,10 @@ namespace Server
                     {
                         message = getMessage();
                         message = DateTime.Now.ToShortTimeString() + " " + UserName + ": " + message;
-                        Console.WriteLine(message);
                         server.BroadcastMessage(message);
+                        Console.WriteLine(message);
                     }
-                    catch
+                    catch (IOException e)
                     {
                         message = UserName + " покинул чат";
                         Console.WriteLine(message);
@@ -53,29 +54,36 @@ namespace Server
                     }
                 }
             }
-            catch (Exception e)
+            catch (SocketException e)
             {
-                Console.WriteLine("Ошибка в работе чата:" + e.Message);
+                Console.WriteLine(e.Message);
             }
             finally
             {
-                //server.removeConnection(id);
+                server.RemoveClient(Id);
                 Close();
             }
         }
         private string getMessage()
         {
-            byte[] data = new byte[512];
-            StringBuilder builder = new StringBuilder();
-            int bytes = 0;
-            do
+            try
             {
-                bytes = Stream.Read(data, 0, data.Length);
-                builder.Append(Encoding.Unicode.GetString(data, 0, bytes));
+                byte[] data = new byte[512];
+                StringBuilder builder = new StringBuilder();
+                int bytes = 0;
+                do
+                {
+                    bytes = Stream.Read(data, 0, data.Length);
+                    builder.Append(Encoding.Unicode.GetString(data, 0, bytes));
+                }
+                while (Stream.DataAvailable);
+                return builder.ToString();
             }
-            while (Stream.DataAvailable);
-
-            return builder.ToString();
+            catch (IOException e)
+            {
+                Console.WriteLine(e.Message);
+                throw e;
+            }
         }
 
         public void Close()
