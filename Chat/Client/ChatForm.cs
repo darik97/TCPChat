@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Sockets;
 using System.Text;
@@ -100,7 +101,7 @@ namespace Client
 
                 chatHistory.Text = "Добро пожаловать, " + userName + "\n";
             }
-            catch (Exception ex)
+            catch (SocketException ex)
             {
                 MessageBox.Show(ex.Message, "Ошибка при подключении");
             }
@@ -133,7 +134,12 @@ namespace Client
 
                     Invoke(chatDelegate, new object[] { message }); 
                 }
-                catch (Exception e)
+                catch (IOException e)
+                {
+                    MessageBox.Show("Подключение прервано!");
+                    disconnect();
+                }
+                catch (SocketException e)
                 {
                     MessageBox.Show("Подключение прервано!");
                     disconnect();
