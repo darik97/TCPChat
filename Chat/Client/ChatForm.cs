@@ -38,7 +38,7 @@ namespace Client
             };
 
             sendButton.Click += SendButton_Click;
-            messageBox.KeyUp += (sender, arg) =>
+            messageBox.KeyDown += (sender, arg) =>
             {
                 if (arg.KeyCode == Keys.Enter)
                 {
@@ -161,6 +161,7 @@ namespace Client
                 string message = messageBox.Text;
                 byte[] data = Encoding.Unicode.GetBytes(message);
                 stream.Write(data, 0, data.Length);
+                messageBox.Focus();
                 messageBox.Clear();
             }
         }

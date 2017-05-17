@@ -13,12 +13,12 @@ namespace Server
             try
             {
                 server = new ServerObject();
-                listenThread = new Thread(new ThreadStart(server.listen));
+                listenThread = new Thread(new ThreadStart(server.Listen));
                 listenThread.Start(); 
             }
             catch (Exception ex)
             {
-                server.disconnect();
+                server.Disconnect();
                 Console.WriteLine(ex.Message);
             }
         }

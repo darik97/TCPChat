@@ -13,12 +13,12 @@ namespace Server
         static TcpListener tcpListener;
         List<ClientObject> clients = new List<ClientObject>();
 
-        internal void AddConnection(ClientObject newClient)
+        internal void AddNewClient(ClientObject newClient)
         {
             clients.Add(newClient);
         }
 
-        protected internal void listen()
+        public void Listen()
         {
             try
             {
@@ -37,20 +37,20 @@ namespace Server
             catch(Exception ex)
             {
                 Console.WriteLine("Ошибка в работе сервера: " + ex.Message);
-                disconnect();
+                Disconnect();
             }
         }
 
-        protected internal void disconnect()
+        public void Disconnect()
         {
             tcpListener.Stop();
             for (int i = 0; i < clients.Count; i++)
             {
-                clients[i].close();
+                clients[i].Close();
             }
         }
 
-        internal void broadcastMessage(string message)
+        public void BroadcastMessage(string message)
         {
             byte[] data = Encoding.Unicode.GetBytes(message);
             for (int i = 0; i < clients.Count; i++)
@@ -59,7 +59,7 @@ namespace Server
             }
         }
 
-        internal void removeConnection(string clientId)
+        public void RemoveClient(string clientId)
         {
             ClientObject client = clients.FirstOrDefault(c => c.id == clientId);
             if (client != null)

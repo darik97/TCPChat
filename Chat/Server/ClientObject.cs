@@ -17,7 +17,7 @@ namespace Server
             id = Guid.NewGuid().ToString();
             client = tcpClient;
             server = serverObject;
-            serverObject.AddConnection(this);
+            serverObject.AddNewClient(this);
         }
 
         public void Process()
@@ -31,7 +31,7 @@ namespace Server
                 message += " присоединился к чату";
                 Console.WriteLine(message);
                 message += server.GetUsersList();
-                server.broadcastMessage(message);
+                server.BroadcastMessage(message);
 
                 while (true)
                 {
@@ -40,15 +40,15 @@ namespace Server
                         message = getMessage();
                         message = DateTime.Now.ToShortTimeString() + " " + userName + ": " + message;
                         Console.WriteLine(message);
-                        server.broadcastMessage(message);
+                        server.BroadcastMessage(message);
                     }
                     catch
                     {
                         message = userName + " покинул чат";
                         Console.WriteLine(message);
-                        server.removeConnection(id);
+                        server.RemoveClient(id);
                         message += server.GetUsersList();
-                        server.broadcastMessage(message);
+                        server.BroadcastMessage(message);
                         break;
                     }
                 }
@@ -60,7 +60,7 @@ namespace Server
             finally
             {
                 //server.removeConnection(id);
-                close();
+                Close();
             }
         }
         private string getMessage()
@@ -78,7 +78,7 @@ namespace Server
             return builder.ToString();
         }
 
-        protected internal void close()
+        public void Close()
         {
             if (stream != null)
             {
