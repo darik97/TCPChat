@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net.Sockets;
 using System.Threading;
 
 namespace Server
@@ -15,6 +16,16 @@ namespace Server
                 server = new ServerObject();
                 listenThread = new Thread(new ThreadStart(server.Listen));
                 listenThread.Start(); 
+            }
+            catch (SocketException ex)
+            {
+                server.Disconnect();
+                Console.WriteLine(ex.Message);
+            }
+            catch (ThreadStartException ex)
+            {
+                server.Disconnect();
+                Console.WriteLine(ex.Message);
             }
             catch (Exception ex)
             {
