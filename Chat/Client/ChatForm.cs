@@ -41,10 +41,11 @@ namespace Client
             };
 
             sendButton.Click += sendButton_Click;
-            messageBox.KeyDown += (sender, arg) =>
+            messageBox.KeyPress += (sender, arg) =>
             {
-                if (arg.KeyCode == Keys.Enter)
+                if (arg.KeyChar == (char)Keys.Enter)
                 {
+                    arg.Handled = true;
                     sendButton_Click(sender, arg);
                 }
             };
@@ -85,7 +86,7 @@ namespace Client
 
         private void sendButton_Click(object sender, EventArgs e)
         {
-            if (messageBox.Text != "")
+            if (messageBox.Text.Trim() != "")
             {
                 string message = messageBox.Text;
                 chatController.SendMessage(message);

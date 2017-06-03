@@ -64,6 +64,7 @@ namespace Server
                 Close();
             }
         }
+
         private string getMessage()
         {
             try
