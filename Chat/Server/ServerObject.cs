@@ -1,4 +1,4 @@
-﻿//using Serialization;
+﻿using Serialization;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -15,9 +15,11 @@ namespace Server
     {
         static TcpListener tcpListener;
         List<ClientObject> clients = new List<ClientObject>();
+        ClientObject client;
 
         internal void AddNewClient(ClientObject newClient)
         {
+            client = newClient;
             clients.Add(newClient);
         }
 
@@ -77,30 +79,13 @@ namespace Server
             }
         }
 
-        public void BroadcastMessage(string message)
-        {
-            try
-            {
-                byte[] data = Encoding.Unicode.GetBytes(message);
-                for (int i = 0; i < clients.Count; i++)
-                {
-                    clients[i].Stream.Write(data, 0, data.Length);
-                }
-            }
-            catch (IOException e)
-            {
-                Console.WriteLine(e.Message);
-            }
-        }
-
-        //public void BroadcastMessage(MessageWithImage newMes)
+        //public void BroadcastMessage(string message)
         //{
         //    try
         //    {
-        //        var data = Serialization.Serialization.Serialize(newMes);
+        //        byte[] data = Encoding.Unicode.GetBytes(message);
         //        for (int i = 0; i < clients.Count; i++)
         //        {
-
         //            clients[i].Stream.Write(data, 0, data.Length);
         //        }
         //    }
@@ -109,6 +94,23 @@ namespace Server
         //        Console.WriteLine(e.Message);
         //    }
         //}
+
+        public void BroadcastMessage(MessageWithImage newMes)
+        {
+            try
+            {
+                var data = Serialization.Serialization.Serialize(newMes);
+                for (int i = 0; i < clients.Count; i++)
+                {
+                    if (clients[i] != client)
+                        clients[i].Stream.Write(data, 0, data.Length);
+                }
+            }
+            catch (IOException e)
+            {
+                Console.WriteLine(e.Message);
+            }
+        }
 
         public string GetUsersList()
         {

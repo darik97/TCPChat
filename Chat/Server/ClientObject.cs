@@ -1,4 +1,5 @@
 ﻿//using Serializer;
+using Serialization;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -23,101 +24,35 @@ namespace Server
             serverObject.AddNewClient(this);
         }
 
-        public void Process()
-        {
-            try
-            {
-                Stream = client.GetStream();
-                string message = getMessage();
-                UserName = message;
-
-                message += " присоединился к чату";
-                Console.WriteLine(message);
-                message += server.GetUsersList();
-                server.BroadcastMessage(message);
-
-                while (true)
-                {
-                    try
-                    {
-                        message = getMessage();
-                        message = DateTime.Now.ToShortTimeString() + " " + UserName + ": " + message;
-                        server.BroadcastMessage(message);
-                        Console.WriteLine(message);
-                    }
-                    catch (IOException e)
-                    {
-                        message = UserName + " покинул чат";
-                        Console.WriteLine(message);
-                        server.RemoveClient(Id);
-                        message += server.GetUsersList();
-                        server.BroadcastMessage(message);
-                        break;
-                    }
-                }
-            }
-            catch (SocketException e)
-            {
-                Console.WriteLine(e.Message);
-            }
-            finally
-            {
-                server.RemoveClient(Id);
-                Close();
-            }
-        }
-
         //public void Process()
         //{
         //    try
         //    {
         //        Stream = client.GetStream();
-        //        Packet packet = getData();
-        //        string message =  SerializeHelper.Deserialize<string>(packet.Data);
-
+        //        string message = getMessage();
         //        UserName = message;
 
         //        message += " присоединился к чату";
         //        Console.WriteLine(message);
-        //        packet = new Packet(Command.Message, UserName, SerializeHelper.Serialize(message));
-        //        server.Broadcast(SerializeHelper.Serialize(packet));
-
-        //        List<string> usersOnline = server.GetUsersOnline();
-        //        byte[] users = SerializeHelper.Serialize(usersOnline);
-        //        packet = new Packet(Command.List, null, users);
-        //        server.Broadcast(SerializeHelper.Serialize(packet));
+        //        message += server.GetUsersList();
+        //        server.BroadcastMessage(message);
 
         //        while (true)
         //        {
         //            try
         //            {
-        //                packet = getData();
-        //                switch (packet.Command)
-        //                {
-        //                    case Command.Message:
-        //                        message = DateTime.Now.ToShortTimeString() + " " + UserName + ": " + 
-        //                            SerializeHelper.Deserialize<string>(packet.Data);
-        //                        packet = new Packet(packet.Command, packet.Sender, SerializeHelper.Serialize(message));
-        //                        server.Broadcast(SerializeHelper.Serialize(packet));
-        //                        Console.WriteLine("{0}: {1}", packet.Sender, Encoding.UTF8.GetString(packet.Data));
-        //                        break;
-        //                    case Command.Image:
-        //                        server.Broadcast(SerializeHelper.Serialize(packet));
-        //                        break;
-        //                }
+        //                message = getMessage();
+        //                message = DateTime.Now.ToShortTimeString() + " " + UserName + ": " + message;
+        //                server.BroadcastMessage(message);
+        //                Console.WriteLine(message);
         //            }
         //            catch (IOException e)
         //            {
         //                message = UserName + " покинул чат";
         //                Console.WriteLine(message);
-        //                packet = new Packet(Command.Message, UserName, SerializeHelper.Serialize(message));
-        //                server.Broadcast(SerializeHelper.Serialize(packet));
-
-        //                usersOnline = server.GetUsersOnline();
-        //                users = SerializeHelper.Serialize(usersOnline);
-        //                packet = new Packet(Command.List, null, users);
-        //                server.Broadcast(SerializeHelper.Serialize(packet));
-
+        //                server.RemoveClient(Id);
+        //                message += server.GetUsersList();
+        //                server.BroadcastMessage(message);
         //                break;
         //            }
         //        }
@@ -133,27 +68,78 @@ namespace Server
         //    }
         //}
 
-        private string getMessage()
+        public void Process()
         {
             try
             {
-                byte[] data = new byte[512];
-                StringBuilder builder = new StringBuilder();
-                int bytes = 0;
-                do
+                Stream = client.GetStream();
+                var mes = Serialization.Serialization.Deserialize(Stream);
+
+                string message = mes.Message;
+                UserName = message;
+
+                message += " присоединился к чату";
+                Console.WriteLine(message);
+
+                var list = mes.Users;
+                server.BroadcastMessage(new MessageWithImage(message, null, list));
+
+                while (true)
                 {
-                    bytes = Stream.Read(data, 0, data.Length);
-                    builder.Append(Encoding.Unicode.GetString(data, 0, bytes));
+                    try
+                    {
+                        mes = Serialization.Serialization.Deserialize(Stream);
+                        if (mes != null)
+                        {
+                            message = mes.Message;
+                            message = DateTime.Now.ToShortTimeString() + " " + UserName + ": " + message;
+                            server.BroadcastMessage(new MessageWithImage(message, mes.Image, null));
+                            Console.WriteLine(message);
+                        }
+                    }
+                    catch (IOException e)
+                    {
+                        message = UserName + " покинул чат";
+                        Console.WriteLine(message);
+                        server.RemoveClient(Id);
+                        list = mes.Users;
+                        server.BroadcastMessage(new MessageWithImage(message, null, list));
+                        break;
+                    }
                 }
-                while (Stream.DataAvailable);
-                return builder.ToString();
             }
-            catch (IOException e)
+            catch (SocketException e)
             {
                 Console.WriteLine(e.Message);
-                throw e;
+            }
+            finally
+            {
+                server.RemoveClient(Id);
+                Close();
             }
         }
+
+        //private string getMessage()
+        //{
+        //    try
+        //    {
+        //        byte[] data = new byte[512];
+        //        StringBuilder builder = new StringBuilder();
+        //        int bytes = 0;
+        //        do
+        //        {
+        //            bytes = Stream.Read(data, 0, data.Length);
+        //            builder.Append(Encoding.Unicode.GetString(data, 0, bytes));
+        //        }
+        //        while (Stream.DataAvailable);
+        //        return builder.ToString();
+        //    }
+        //    catch (IOException e)
+        //    {
+        //        Console.WriteLine(e.Message);
+        //        throw e;
+        //    }
+        //}
 
         //private Packet getData()
         //{

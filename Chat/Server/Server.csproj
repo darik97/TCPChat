@@ -53,9 +53,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Serializator\Serializator.csproj">
-      <Project>{5ffefc47-478e-43a3-8983-836a465e211f}</Project>
-      <Name>Serializator</Name>
+    <ProjectReference Include="..\..\..\Serialization\Serialization.csproj">
+      <Project>{086560ed-a9ff-414f-870a-c56be13b67b7}</Project>
+      <Name>Serialization</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
