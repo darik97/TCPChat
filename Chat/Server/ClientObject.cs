@@ -1,4 +1,6 @@
-﻿using System;
+﻿//using Serializer;
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.Sockets;
 using System.Text;
@@ -65,6 +67,72 @@ namespace Server
             }
         }
 
+        //public void Process()
+        //{
+        //    try
+        //    {
+        //        Stream = client.GetStream();
+        //        Packet packet = getData();
+        //        string message =  SerializeHelper.Deserialize<string>(packet.Data);
+
+        //        UserName = message;
+
+        //        message += " присоединился к чату";
+        //        Console.WriteLine(message);
+        //        packet = new Packet(Command.Message, UserName, SerializeHelper.Serialize(message));
+        //        server.Broadcast(SerializeHelper.Serialize(packet));
+
+        //        List<string> usersOnline = server.GetUsersOnline();
+        //        byte[] users = SerializeHelper.Serialize(usersOnline);
+        //        packet = new Packet(Command.List, null, users);
+        //        server.Broadcast(SerializeHelper.Serialize(packet));
+
+        //        while (true)
+        //        {
+        //            try
+        //            {
+        //                packet = getData();
+        //                switch (packet.Command)
+        //                {
+        //                    case Command.Message:
+        //                        message = DateTime.Now.ToShortTimeString() + " " + UserName + ": " + 
+        //                            SerializeHelper.Deserialize<string>(packet.Data);
+        //                        packet = new Packet(packet.Command, packet.Sender, SerializeHelper.Serialize(message));
+        //                        server.Broadcast(SerializeHelper.Serialize(packet));
+        //                        Console.WriteLine("{0}: {1}", packet.Sender, Encoding.UTF8.GetString(packet.Data));
+        //                        break;
+        //                    case Command.Image:
+        //                        server.Broadcast(SerializeHelper.Serialize(packet));
+        //                        break;
+        //                }
+        //            }
+        //            catch (IOException e)
+        //            {
+        //                message = UserName + " покинул чат";
+        //                Console.WriteLine(message);
+        //                packet = new Packet(Command.Message, UserName, SerializeHelper.Serialize(message));
+        //                server.Broadcast(SerializeHelper.Serialize(packet));
+
+        //                usersOnline = server.GetUsersOnline();
+        //                users = SerializeHelper.Serialize(usersOnline);
+        //                packet = new Packet(Command.List, null, users);
+        //                server.Broadcast(SerializeHelper.Serialize(packet));
+
+        //                break;
+        //            }
+        //        }
+        //    }
+        //    catch (SocketException e)
+        //    {
+        //        Console.WriteLine(e.Message);
+        //    }
+        //    finally
+        //    {
+        //        server.RemoveClient(Id);
+        //        Close();
+        //    }
+        //}
+
         private string getMessage()
         {
             try
@@ -86,6 +154,28 @@ namespace Server
                 throw e;
             }
         }
+
+        //private Packet getData()
+        //{
+        //    try
+        //    {
+        //        byte[] data = new byte[512];
+        //        StringBuilder builder = new StringBuilder();
+        //        int bytes = 0;
+        //        do
+        //        {
+        //            bytes = Stream.Read(data, 0, data.Length);
+        //        }
+        //        while (Stream.DataAvailable);
+        //        Packet packet = SerializeHelper.Deserialize<Packet>(data);
+        //        return packet;
+        //    }
+        //    catch (IOException e)
+        //    {
+        //        Console.WriteLine(e.Message);
+        //        throw e;
+        //    }
+        //}
 
         public void Close()
         {

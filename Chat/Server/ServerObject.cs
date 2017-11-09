@@ -1,4 +1,5 @@
-﻿using System;
+﻿//using Serialization;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -6,6 +7,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
+
 
 namespace Server
 {
@@ -23,9 +25,14 @@ namespace Server
         {
             try
             {
-                tcpListener = new TcpListener(IPAddress.Any, 8000);
+                tcpListener = new TcpListener(IPAddress.Any, 8888);
                 tcpListener.Start();
-                Console.WriteLine("Сервер запущен");
+#pragma warning disable CS0618 // Тип или член устарел
+                IPHostEntry ipHostInfo = Dns.Resolve(Dns.GetHostName());
+#pragma warning restore CS0618 // Тип или член устарел
+                IPAddress localIpAddress = ipHostInfo.AddressList[0]; // choose the first of the list
+                string clientUdp = localIpAddress.ToString();
+                Console.WriteLine("Сервер запущен. Адрес: " + clientUdp);
 
                 while (true)
                 {
@@ -61,6 +68,15 @@ namespace Server
             }
         }
 
+        public void RemoveClient(string clientId)
+        {
+            ClientObject client = clients.FirstOrDefault(c => c.Id == clientId);
+            if (client != null)
+            {
+                clients.Remove(client);
+            }
+        }
+
         public void BroadcastMessage(string message)
         {
             try
@@ -77,14 +93,22 @@ namespace Server
             }
         }
 
-        public void RemoveClient(string clientId)
-        {
-            ClientObject client = clients.FirstOrDefault(c => c.Id == clientId);
-            if (client != null)
-            {
-                clients.Remove(client);
-            }
-        }
+        //public void BroadcastMessage(MessageWithImage newMes)
+        //{
+        //    try
+        //    {
+        //        var data = Serialization.Serialization.Serialize(newMes);
+        //        for (int i = 0; i < clients.Count; i++)
+        //        {
+
+        //            clients[i].Stream.Write(data, 0, data.Length);
+        //        }
+        //    }
+        //    catch (IOException e)
+        //    {
+        //        Console.WriteLine(e.Message);
+        //    }
+        //}
 
         public string GetUsersList()
         {

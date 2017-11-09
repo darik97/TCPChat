@@ -21,5 +21,17 @@ namespace Client
             }
             return false;
         }
+
+        public static bool IsImage(string message, out string img)
+        {
+            img = null;
+            string temp = message;
+            if (temp.Trim(new char[] { '#', '&' }).Length - temp.Length == 4)
+            {
+                img = temp.Trim(new char[] { '#', '&' });
+                return true;
+            }
+            return false;
+        }
     }
 }

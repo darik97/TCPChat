@@ -33,6 +33,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="NAudio">
+      <HintPath>..\..\..\..\..\Downloads\NAudio-1.8.0-Release\NAudio.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -56,6 +59,9 @@
     <Compile Include="Parser.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StickerMenuItem.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <EmbeddedResource Include="ChatForm.resx">
       <DependentUpon>ChatForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -67,6 +73,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -80,6 +87,61 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Images\s0.png" />
+    <EmbeddedResource Include="Images\s1.png" />
+    <EmbeddedResource Include="Images\s10.png" />
+    <EmbeddedResource Include="Images\s11.png" />
+    <EmbeddedResource Include="Images\s12.png" />
+    <EmbeddedResource Include="Images\s13.png" />
+    <EmbeddedResource Include="Images\s14.png" />
+    <EmbeddedResource Include="Images\s15.png" />
+    <EmbeddedResource Include="Images\s16.png" />
+    <EmbeddedResource Include="Images\s17.png" />
+    <EmbeddedResource Include="Images\s18.png" />
+    <EmbeddedResource Include="Images\s19.png" />
+    <EmbeddedResource Include="Images\s2.png" />
+    <EmbeddedResource Include="Images\s20.png" />
+    <EmbeddedResource Include="Images\s21.png" />
+    <EmbeddedResource Include="Images\s22.png" />
+    <EmbeddedResource Include="Images\s23.png" />
+    <EmbeddedResource Include="Images\s24.png" />
+    <EmbeddedResource Include="Images\s25.png" />
+    <EmbeddedResource Include="Images\s26.png" />
+    <EmbeddedResource Include="Images\s27.png" />
+    <EmbeddedResource Include="Images\s28.png" />
+    <EmbeddedResource Include="Images\s29.png" />
+    <EmbeddedResource Include="Images\s3.png" />
+    <EmbeddedResource Include="Images\s30.png" />
+    <EmbeddedResource Include="Images\s31.png" />
+    <EmbeddedResource Include="Images\s32.png" />
+    <EmbeddedResource Include="Images\s33.png" />
+    <EmbeddedResource Include="Images\s34.png" />
+    <EmbeddedResource Include="Images\s35.png" />
+    <EmbeddedResource Include="Images\s36.png" />
+    <EmbeddedResource Include="Images\s37.png" />
+    <EmbeddedResource Include="Images\s38.png" />
+    <EmbeddedResource Include="Images\s39.png" />
+    <EmbeddedResource Include="Images\s4.png" />
+    <EmbeddedResource Include="Images\s5.png" />
+    <EmbeddedResource Include="Images\s6.png" />
+    <EmbeddedResource Include="Images\s7.png" />
+    <EmbeddedResource Include="Images\s8.png" />
+    <EmbeddedResource Include="Images\s9.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\rtf\rtf.csproj">
+      <Project>{1912b219-a16f-49cc-b603-e8ed80a5a29d}</Project>
+      <Name>rtf</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Serializator\Serializator.csproj">
+      <Project>{5ffefc47-478e-43a3-8983-836a465e211f}</Project>
+      <Name>Serializator</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -9,11 +9,11 @@ namespace Client
 {
     class ChatController
     {
-        const string host = "127.0.0.1";
-        const int port = 8000;
+        const int port = 8888;
         static TcpClient client;
         static NetworkStream stream;
         ChatForm chatView;
+        
 
         public ChatController(ChatForm chatForm)
         {
@@ -24,6 +24,8 @@ namespace Client
         {
             byte[] data = Encoding.Unicode.GetBytes(messageToSend);
             stream.Write(data, 0, data.Length);
+            //Packet packet = new Packet(Command.Message, chatView.UserName, data);
+            //stream.Write(SerializeHelper.Serialize(packet), 0, SerializeHelper.Serialize(packet).Length);
         }
 
         public void StartChat(TcpClient tcpClient)
@@ -32,7 +34,7 @@ namespace Client
 
             try
             {
-                client.Connect(host, port);
+                client.Connect(chatView.Host, port);
                 stream = client.GetStream();
 
                 string message = chatView.UserName;
@@ -49,6 +51,52 @@ namespace Client
                 chatView.Invoke(chatView.ErrorDelegate, new object[] { e.Message, "Ошибка при подключении" });
             }
         }
+
+
+
+        //private void receiveMessage()
+        //{
+        //    while (true)
+        //    {
+        //        try
+        //        {
+        //            byte[] data = new byte[512];
+        //            StringBuilder builder = new StringBuilder();
+        //            int bytes = 0;
+        //            do
+        //            {
+        //                bytes = stream.Read(data, 0, data.Length);
+        //            }
+        //            while (stream.DataAvailable);
+        //            Packet packet = SerializeHelper.Deserialize<Packet>(data);
+
+        //            string message = null;
+        //            List<string> users = new List<string>();
+        //            switch (packet.Command)
+        //            {
+        //                case Command.Message:
+        //                    message = SerializeHelper.Deserialize<string>(packet.Data);
+        //                    chatView.Invoke(chatView.ChatDelegate, new object[] { message });
+        //                break;
+
+        //                case Command.List:
+        //                    users = SerializeHelper.Deserialize<List<string>>(packet.Data);
+        //                    chatView.Invoke(chatView.UsersDelegate, new object[] { users });
+        //                    break;
+        //            }   
+        //        }
+        //        catch (IOException e)
+        //        {
+        //            chatView.Invoke(chatView.ErrorDelegate, new object[] { e.Message, "Подключение прервано" });
+        //            Disconnect();
+        //        }
+        //        catch (SocketException e)
+        //        {
+        //            chatView.Invoke(chatView.ErrorDelegate, new object[] { e.Message, "Подключение прервано" });
+        //            Disconnect();
+        //        }
+        //    }
+        //}
 
         private void receiveMessage()
         {
@@ -76,6 +124,7 @@ namespace Client
                     }
 
                     chatView.Invoke(chatView.ChatDelegate, new object[] { message });
+
                 }
                 catch (IOException e)
                 {
